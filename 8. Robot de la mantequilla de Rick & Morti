@@ -1,0 +1,46 @@
+#include <Servo.h>
+#define pin_servo 2
+#define ledrojo 4
+#define trigPin 13
+#define echoPin 12
+#define buzzer 9
+#define frecuencia 1000
+long duration;
+long distance;
+Servo myservo;
+
+void setup()
+{
+  pinMode (pin_servo, OUTPUT);
+  pinMode (ledrojo, OUTPUT);
+  pinMode (trigPin, OUTPUT);
+  pinMode (echoPin, INPUT);
+  pinMode (buzzer, OUTPUT);
+  myservo.attach(pin_servo);
+}
+
+void loop()
+{
+digitalWrite(trigPin, LOW);
+  delay (0.002);
+  digitalWrite(trigPin, HIGH);
+  delay (0.01);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin,HIGH);
+  distance = (duration / 2) / 29.1;
+  if (distance <= 50) 
+{
+    
+    digitalWrite(ledrojo,HIGH);
+    tone(buzzer,frecuencia);
+    delay (1000);
+    noTone(buzzer);
+    myservo.write(180);
+    delay(15);
+}
+  else
+{
+    digitalWrite(ledrojo,LOW);
+    myservo.write(0);
+   }
+    }
