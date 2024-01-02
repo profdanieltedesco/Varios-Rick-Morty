@@ -1,0 +1,31 @@
+/* Funcionamiento básico de un microservo
+
+**Desafío 1:
+¿Cómo girar el servo 45 grados?
+**Desafío 2:
+¿Cómo girar el servo 120 grados?
+**Desafío 3:
+Generar un programa que cambie el nombre del servo 
+y que gire de 45 grados a 120 grados 
+en otro pin ¿Cuál podrías elegir?
+
+Prof. Daniel Tedesco */
+
+
+
+#include <Servo.h>
+
+Servo servo;
+
+
+void setup() {
+servo.attach(9);
+}
+
+void loop() {
+servo.write(0);
+delay(2000);
+
+servo.write(90);
+delay(2000);
+}
