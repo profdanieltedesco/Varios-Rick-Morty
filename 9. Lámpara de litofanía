@@ -1,0 +1,109 @@
+/*
+  Lámpara de litofanías con sensor HC-SR04
+  y LED RGB
+  Prof. Daniel Tedesco
+*/
+
+//INICIO VARIABLES
+
+int disparo = 4;
+int echo = 2;
+
+int ledTest = 13;
+
+int ledRojo = 11;
+int ledVerde = 10;
+int ledAzul = 9;
+int intensidad = 0;
+
+//Inicio variables temporales
+
+long tiempoPulso;
+long tVal;
+
+
+void setup() {
+  //INICIO SETUP ENTRADAS / SALIDAS
+
+  pinMode(ledTest, OUTPUT);
+  pinMode(disparo, OUTPUT);
+  pinMode(echo, INPUT);
+
+  digitalWrite(disparo, LOW);
+  analogWrite(ledRojo, 0);
+  analogWrite(ledVerde, 0);
+  analogWrite(ledAzul, 0);
+
+  //Saludo Inicial
+  digitalWrite(ledTest, HIGH);
+  delay(500);
+  digitalWrite(ledTest, LOW);
+  delay(500);
+  digitalWrite(ledTest, HIGH);
+  delay(500);
+  digitalWrite(ledTest, LOW);
+  delay(500);
+  digitalWrite(ledTest, HIGH);
+  delay(500);
+  digitalWrite(ledTest, LOW);
+  delay(500);
+}
+
+
+void loop() {
+  //Disparo de la señal.
+
+  digitalWrite(disparo, HIGH); /* envío del pulso ultrasónico*/
+  delayMicroseconds(10);
+  digitalWrite(disparo, LOW);
+
+  /*INICIO
+     Medimos la longitud del puso entrante la utilizamos para medir el tiempo que transcurrido entre el envío  del pulso ultrasónico y cuando el sensor recibe el rebote,
+     es decir: desde que el pin "echo" empieza a recibir el rebote, HIGH, hasta que deja de hacerlo, LOW, la longitud del pulso entrante.
+     El resultado lo da en microsegundos
+  */
+
+  tiempoPulso = pulseIn(echo, HIGH);
+
+  /*INICIO
+    Ahora dependiendo del tiempo del pulso vamos a utilizar los leds RGB para señalar si el objeto se encuentra cerca o lejos.
+    Cuando el objeto se encuentre a menos de 10cm mostraremos una luz roja (550µs segun las pruegas en el capitulo anterior)
+    Cuando esté entre 20cm y 15cm una luz amarilla (860µs segun las pruegas en el capitulo anterior)
+    Cuando está a entre 15cm y 20cm la luz verde (1140µs segun las pruegas en el capitulo anterior)
+    Cuando esté mas lejos luz blanca proporcional a la distancia
+  */
+  if (tiempoPulso < 550) {
+    analogWrite(ledRojo, 255);
+    analogWrite(ledVerde, 0);
+    analogWrite(ledAzul, 0);
+  }
+  else if ( tiempoPulso >= 550 &&  tiempoPulso < 860 ) {
+    analogWrite(ledRojo, 255);
+    analogWrite(ledVerde, 255);
+    analogWrite(ledAzul, 0);
+  }
+  else if (tiempoPulso >= 860 && tiempoPulso < 1140) {
+    analogWrite(ledRojo, 0);
+    analogWrite(ledVerde, 255);
+    analogWrite(ledAzul, 0);
+  }
+  else { 
+    tVal = constrain(tiempoPulso, 1140, 5700); /* Constrain limita el valor obtenido en la variable (el primer parametro) a un valor entre 
+                                               el 2° parametro (limite inferior, 1140 en este caso) y el 3° parametro (limite superiro 5700).
+                                              Funciona de la siguiente forma:
+                                              si tiempoPulso esta entre los limites, devuelve el mismo valor de tiempoPulso, 
+                                              si es menor al limite inferior, reemplaza tiempoPulso por el limite inferior (1140 en este caso)
+                                              si es superior al limite superior, reemplaza el valor de tiempoPulso por el limite superior (5700) */
+    
+    
+    intensidad = map(tVal, 1140, 5700, 0, 255);  /*  map(X, inMin,inMax,outMin,outMax)   transforma el valor obtenido antes (tval), que 
+                                              estaba entre 1140 y 5700 a un nuevo valor proporcional pero entre 0 y 255 que son los que
+                                              puede utilizar analogWrite en los pines.*/   
+    
+
+    analogWrite(ledRojo, intensidad);          
+    analogWrite(ledVerde, intensidad);
+    analogWrite(ledAzul, intensidad);
+  }
+
+}
